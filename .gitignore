@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Java / Maven
+java_target/target/
+*.class
+
+# .NET (legacy source is read-only; ignore build artifacts if ever built)
+dotnet_source/**/bin/
+dotnet_source/**/obj/
+dotnet_source/packages/
+*.user
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
