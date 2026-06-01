@@ -1,0 +1,68 @@
+{
+  "description": "Machine-readable C#/.NET -> Java/Spring construct mapping. Drives the Construct Mapping phase on the dashboard. Full rationale and citations in migration-playbook.md.",
+  "categories": [
+    {
+      "id": "data_access",
+      "label": "EF6 -> Spring Data JPA",
+      "rules": [
+        {"from": "DbContext", "to": "JpaRepository<T, ID>"},
+        {"from": "[Table]/[Key]/[Column]", "to": "@Entity/@Id/@Column"},
+        {"from": "[ForeignKey] + nav prop", "to": "@ManyToOne/@OneToMany"},
+        {"from": "SaveChanges()", "to": "repository.save() (@Transactional)"},
+        {"from": "Stored procedure", "to": "@Query (JPQL/native) or projection"}
+      ]
+    },
+    {
+      "id": "linq",
+      "label": "LINQ -> Streams",
+      "rules": [
+        {"from": ".Where(p)", "to": ".filter(p)"},
+        {"from": ".Select(f)", "to": ".map(f)"},
+        {"from": ".OrderByDescending(k)", "to": ".sorted(comparing(k).reversed())"},
+        {"from": ".Sum(x)", "to": ".reduce(ZERO, BigDecimal::add)"},
+        {"from": ".GroupBy(k)", "to": ".collect(groupingBy(k))"},
+        {"from": ".FirstOrDefault()", "to": ".findFirst().orElse(null)"}
+      ]
+    },
+    {
+      "id": "async",
+      "label": "async/await -> CompletableFuture",
+      "rules": [
+        {"from": "async Task<T>", "to": "CompletableFuture<T>"},
+        {"from": "await", "to": ".thenApply()/.join()"},
+        {"from": "Task.WhenAll", "to": "CompletableFuture.allOf"}
+      ]
+    },
+    {
+      "id": "web",
+      "label": "ASP.NET MVC -> Spring MVC",
+      "rules": [
+        {"from": "Controller", "to": "@Controller"},
+        {"from": "[HttpGet]/[HttpPost]", "to": "@GetMapping/@PostMapping"},
+        {"from": "[Authorize]", "to": "@PreAuthorize / SecurityFilterChain"},
+        {"from": "return View(model)", "to": "model.addAttribute(); return \"view\""},
+        {"from": "TempData", "to": "RedirectAttributes flash"}
+      ]
+    },
+    {
+      "id": "views",
+      "label": "Razor -> Thymeleaf",
+      "rules": [
+        {"from": "@model", "to": "th:object / ${...}"},
+        {"from": "@foreach", "to": "th:each"},
+        {"from": "@Html.ActionLink", "to": "th:href=@{...}"},
+        {"from": "_Layout + @RenderBody", "to": "th:fragment layout"}
+      ]
+    },
+    {
+      "id": "types",
+      "label": "Core types",
+      "rules": [
+        {"from": "decimal", "to": "BigDecimal"},
+        {"from": "DateTime", "to": "LocalDateTime/Instant"},
+        {"from": "enum", "to": "enum + @Enumerated"},
+        {"from": "Math.Round(AwayFromZero)", "to": "setScale(2, HALF_UP)"}
+      ]
+    }
+  ]
+}

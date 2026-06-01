@@ -1,0 +1,155 @@
+{
+  "status": "ready",
+  "title": ".NET -> Java Modernization",
+  "subtitle": "Phased, human-in-the-loop migration of a legacy ASP.NET MVC / EF6 app to Spring Boot",
+  "phases": [
+    {
+      "id": "p1",
+      "name": "Intake",
+      "summary": "Point Devin at one app / codebase",
+      "status": "pending"
+    },
+    {
+      "id": "p2",
+      "name": "Assessment & Analysis",
+      "summary": "Comprehension, inventory, complexity scoring",
+      "status": "pending"
+    },
+    {
+      "id": "p3",
+      "name": "Construct Mapping",
+      "summary": "C#->Java, EF->JPA, LINQ->Streams, async->CompletableFuture, Razor->Thymeleaf",
+      "status": "pending"
+    },
+    {
+      "id": "p4",
+      "name": "Gap Analysis & Architecture",
+      "summary": "Identify gaps; propose target architecture",
+      "status": "pending"
+    },
+    {
+      "id": "p5",
+      "name": "Implementation",
+      "summary": "Generate Java/Spring Boot into java_target",
+      "status": "pending"
+    },
+    {
+      "id": "p6",
+      "name": "Testing & Validation",
+      "summary": "Generate + run tests, equivalence checks, fix loop",
+      "status": "pending"
+    },
+    {
+      "id": "p7",
+      "name": "Output / Release",
+      "summary": "Modernized app + release/runbook docs",
+      "status": "pending"
+    }
+  ],
+  "gates": [
+    {
+      "id": "g1",
+      "name": "Human reviews assessment",
+      "after": "p2",
+      "role": "Tech Lead",
+      "status": "pending"
+    },
+    {
+      "id": "g2",
+      "name": "Architect approves mapping rules",
+      "after": "p3",
+      "role": "Architect",
+      "status": "pending"
+    },
+    {
+      "id": "g3",
+      "name": "Architect signs off on architecture",
+      "after": "p4",
+      "role": "Architect",
+      "status": "pending"
+    },
+    {
+      "id": "g4",
+      "name": "Human reviews & approves PR before merge",
+      "after": "p6",
+      "role": "Reviewer",
+      "status": "pending"
+    },
+    {
+      "id": "g5",
+      "name": "Human approves release",
+      "after": "p7",
+      "role": "Release Manager",
+      "status": "pending"
+    }
+  ],
+  "assessment": {
+    "files": 23,
+    "lines": 1174,
+    "complexity": 321,
+    "complexity_band": "HIGH",
+    "async_methods": 8,
+    "linq_ops": 25,
+    "ef_annotations": 48,
+    "mvc_attrs": 13,
+    "razor_directives": 18,
+    "files_by_kind": {
+      "sql": 2,
+      "csharp": 3,
+      "controller": 2,
+      "ef_context": 1,
+      "ef_entity": 5,
+      "project_config": 3,
+      "service": 3,
+      "razor_view": 4
+    }
+  },
+  "mapping": {
+    "categories": [
+      {
+        "id": "data_access",
+        "label": "EF6 -> Spring Data JPA",
+        "rule_count": 5,
+        "applied": 0
+      },
+      {
+        "id": "linq",
+        "label": "LINQ -> Streams",
+        "rule_count": 6,
+        "applied": 0
+      },
+      {
+        "id": "async",
+        "label": "async/await -> CompletableFuture",
+        "rule_count": 3,
+        "applied": 0
+      },
+      {
+        "id": "web",
+        "label": "ASP.NET MVC -> Spring MVC",
+        "rule_count": 5,
+        "applied": 0
+      },
+      {
+        "id": "views",
+        "label": "Razor -> Thymeleaf",
+        "rule_count": 4,
+        "applied": 0
+      },
+      {
+        "id": "types",
+        "label": "Core types",
+        "rule_count": 4,
+        "applied": 0
+      }
+    ],
+    "total_rules": 27,
+    "applied_rules": 0
+  },
+  "outputs": {
+    "java_files_generated": 0,
+    "tests_generated": 0,
+    "tests_passing": 0,
+    "pr_url": null
+  }
+}

@@ -1,0 +1,56 @@
+@model OrderManagement.Web.Models.Order
+@{
+    ViewBag.Title = "Order " + Model.OrderNumber;
+}
+
+<h2>Order @Model.OrderNumber</h2>
+
+<dl class="dl-horizontal">
+    <dt>Customer</dt>
+    <dd>@Model.Customer.Name (@Model.Customer.PricingTier)</dd>
+    <dt>Status</dt>
+    <dd>@Model.Status</dd>
+    <dt>Order Date</dt>
+    <dd>@Model.OrderDate.ToString("yyyy-MM-dd")</dd>
+</dl>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>SKU</th>
+            <th>Description</th>
+            <th class="text-right">Qty</th>
+            <th class="text-right">Unit Price</th>
+            <th class="text-right">Discount</th>
+            <th class="text-right">Line Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var line in Model.Lines)
+        {
+            <tr>
+                <td>@line.Product.Sku</td>
+                <td>@line.Product.Description</td>
+                <td class="text-right">@line.Quantity</td>
+                <td class="text-right">@line.UnitPrice.ToString("C")</td>
+                <td class="text-right">@line.DiscountRate.ToString("P0")</td>
+                <td class="text-right">@line.LineTotal.ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr><td colspan="5" class="text-right"><strong>Subtotal</strong></td><td class="text-right">@Model.SubTotal.ToString("C")</td></tr>
+        <tr><td colspan="5" class="text-right"><strong>Discount</strong></td><td class="text-right">-@Model.DiscountTotal.ToString("C")</td></tr>
+        <tr><td colspan="5" class="text-right"><strong>Tax</strong></td><td class="text-right">@Model.TaxTotal.ToString("C")</td></tr>
+        <tr><td colspan="5" class="text-right"><strong>Grand Total</strong></td><td class="text-right">@Model.GrandTotal.ToString("C")</td></tr>
+    </tfoot>
+</table>
+
+@using (Html.BeginForm("Submit", "Orders", new { id = Model.OrderId }, FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @if (Model.Status == OrderManagement.Web.Models.OrderStatus.Draft)
+    {
+        <button type="submit" class="btn btn-primary">Submit for Credit Approval</button>
+    }
+}

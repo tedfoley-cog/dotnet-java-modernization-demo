@@ -1,0 +1,43 @@
+@model IEnumerable<OrderManagement.Web.Models.Customer>
+@{
+    ViewBag.Title = "Customers";
+}
+
+<h2>Customers</h2>
+
+@using (Html.BeginForm("Index", "Customers", FormMethod.Get, new { @class = "form-inline" }))
+{
+    <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search name or code" />
+    <input type="text" name="tier" value="@ViewBag.Tier" class="form-control" placeholder="Tier" />
+    <button type="submit" class="btn btn-default">Filter</button>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Tier</th>
+            <th class="text-right">Credit Limit</th>
+            <th>Terms</th>
+            <th>Hold?</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.CustomerCode</td>
+                <td>@c.Name</td>
+                <td>@c.PricingTier</td>
+                <td class="text-right">@c.CreditLimit.ToString("C")</td>
+                <td>Net-@c.PaymentTermsDays</td>
+                <td>@(c.OnCreditHold ? "Yes" : "No")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav>
+    Page @ViewBag.Page of @ViewBag.TotalPages
+</nav>

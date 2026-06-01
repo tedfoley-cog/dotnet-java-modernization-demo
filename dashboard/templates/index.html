@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>.NET → Java Modernization — Live Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0b1220;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding-bottom: 3rem;
+    }
+    header {
+      background: linear-gradient(135deg, #4b2bb5 0%, #6d28d9 50%, #0ea5e9 100%);
+      padding: 1.75rem 1.5rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,.4);
+    }
+    header h1 { font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 700; }
+    header p { margin-top: .35rem; color: #e0e7ff; font-size: .95rem; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 1.5rem; }
+    .grid { display: grid; gap: 1.5rem; grid-template-columns: 1.6fr 1fr; }
+    @media (max-width: 880px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: #131c30; border: 1px solid #233048; border-radius: 14px;
+      padding: 1.25rem 1.35rem; box-shadow: 0 1px 3px rgba(0,0,0,.3);
+    }
+    .card h2 {
+      font-size: .8rem; text-transform: uppercase; letter-spacing: .08em;
+      color: #94a3b8; margin-bottom: 1rem; font-weight: 600;
+    }
+
+    /* Timeline */
+    .timeline { position: relative; }
+    .row { display: flex; align-items: stretch; gap: .9rem; margin-bottom: .55rem; }
+    .marker { width: 34px; display: flex; flex-direction: column; align-items: center; }
+    .dot {
+      width: 30px; height: 30px; border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; font-size: .8rem; font-weight: 700;
+      border: 2px solid #334155; background: #1e293b; flex-shrink: 0;
+    }
+    .line { flex: 1; width: 2px; background: #334155; margin: 2px 0; }
+    .row:last-child .line { display: none; }
+
+    .item {
+      flex: 1; border-radius: 10px; padding: .7rem .95rem; border: 1px solid #233048;
+      background: #18233b; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    }
+    .item .label { font-weight: 600; font-size: .98rem; }
+    .item .desc { color: #94a3b8; font-size: .82rem; margin-top: .15rem; }
+
+    /* Gate styling — visually distinct (amber, diamond marker, dashed border) */
+    .row.gate .dot {
+      border-radius: 6px; transform: rotate(45deg);
+      border-color: #f59e0b; background: #422006;
+    }
+    .row.gate .dot span { transform: rotate(-45deg); }
+    .item.gate {
+      background: #2a1e05; border: 1px dashed #f59e0b;
+    }
+    .item.gate .label { color: #fcd34d; }
+    .item.gate .role { font-size: .72rem; color: #f59e0b; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* Status pills */
+    .pill {
+      font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+      padding: .22rem .55rem; border-radius: 999px; white-space: nowrap;
+    }
+    .pill.pending  { background: #334155; color: #cbd5e1; }
+    .pill.active   { background: #1d4ed8; color: #dbeafe; animation: pulse 1.4s infinite; }
+    .pill.done     { background: #15803d; color: #dcfce7; }
+    .pill.blocked  { background: #b91c1c; color: #fee2e2; }
+    .pill.cleared  { background: #15803d; color: #dcfce7; }
+    .pill.waiting  { background: #92400e; color: #fde68a; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .55; } }
+
+    .dot.pending { }
+    .dot.active  { border-color: #3b82f6; background: #1d4ed8; color: #fff; }
+    .dot.done    { border-color: #22c55e; background: #15803d; color: #fff; }
+    .row.gate .dot.cleared { border-color: #22c55e; background: #15803d; }
+
+    /* Stat cards */
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: .7rem; }
+    .stat { background: #18233b; border: 1px solid #233048; border-radius: 10px; padding: .7rem .85rem; }
+    .stat .n { font-size: 1.5rem; font-weight: 700; color: #fff; }
+    .stat .k { font-size: .72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: .04em; }
+    .band { display: inline-block; padding: .25rem .7rem; border-radius: 8px; font-weight: 700; font-size: .8rem; }
+    .band.HIGH { background: #7f1d1d; color: #fecaca; }
+    .band.MEDIUM { background: #78350f; color: #fde68a; }
+    .band.LOW { background: #14532d; color: #bbf7d0; }
+
+    .maprow { margin-bottom: .7rem; }
+    .maprow .top { display: flex; justify-content: space-between; font-size: .85rem; margin-bottom: .25rem; }
+    .bar { height: 7px; background: #233048; border-radius: 4px; overflow: hidden; }
+    .bar > span { display: block; height: 100%; background: linear-gradient(90deg,#6d28d9,#0ea5e9); width: 0; transition: width .4s; }
+
+    .outputs { display: grid; grid-template-columns: repeat(3,1fr); gap: .6rem; margin-top: .3rem; }
+    .pr { margin-top: .8rem; font-size: .85rem; }
+    .pr a { color: #7dd3fc; }
+    .muted { color: #64748b; }
+    .updated { text-align: right; color: #64748b; font-size: .72rem; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>{{ state.title }}</h1>
+    <p>{{ state.subtitle }}</p>
+  </header>
+
+  <div class="wrap">
+    <div class="grid">
+      <!-- Timeline (phases + human-checkpoint gates) -->
+      <section class="card">
+        <h2>Phased Pipeline &amp; Human Checkpoints</h2>
+        <div class="timeline" id="timeline">
+          {% set ns = namespace(pi=0) %}
+          {% for node in timeline %}
+          {% if node.type != 'gate' %}{% set ns.pi = ns.pi + 1 %}{% endif %}
+          <div class="row {{ 'gate' if node.type == 'gate' else 'phase' }}">
+            <div class="marker">
+              <div class="dot {{ node.status }}" data-dot="{{ node.id }}"><span>{{ '◆' if node.type == 'gate' else ns.pi }}</span></div>
+              <div class="line"></div>
+            </div>
+            <div class="item {{ 'gate' if node.type == 'gate' else '' }}">
+              <div>
+                <div class="label">{{ node.name }}</div>
+                {% if node.type == 'gate' %}
+                  <div class="role">Human checkpoint · {{ node.role }}</div>
+                {% else %}
+                  <div class="desc">{{ node.summary }}</div>
+                {% endif %}
+              </div>
+              <span class="pill {{ node.status }}" data-pill="{{ node.id }}">{{ node.status }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <div>
+        <!-- Assessment -->
+        <section class="card" style="margin-bottom:1.5rem;">
+          <h2>Assessment (Phase 2)</h2>
+          <p style="margin-bottom:.8rem;">Legacy complexity:
+            <span class="band {{ state.assessment.complexity_band }}" data-band>{{ state.assessment.complexity_band }}</span>
+            <span class="muted">(score {{ state.assessment.complexity }})</span>
+          </p>
+          <div class="stats">
+            <div class="stat"><div class="n" data-a="files">{{ state.assessment.files }}</div><div class="k">Source files</div></div>
+            <div class="stat"><div class="n" data-a="lines">{{ state.assessment.lines }}</div><div class="k">Lines of code</div></div>
+            <div class="stat"><div class="n" data-a="async_methods">{{ state.assessment.async_methods }}</div><div class="k">async/await</div></div>
+            <div class="stat"><div class="n" data-a="linq_ops">{{ state.assessment.linq_ops }}</div><div class="k">LINQ ops</div></div>
+            <div class="stat"><div class="n" data-a="ef_annotations">{{ state.assessment.ef_annotations }}</div><div class="k">EF annotations</div></div>
+            <div class="stat"><div class="n" data-a="razor_directives">{{ state.assessment.razor_directives }}</div><div class="k">Razor directives</div></div>
+          </div>
+        </section>
+
+        <!-- Mapping coverage -->
+        <section class="card" style="margin-bottom:1.5rem;">
+          <h2>Construct Mapping (Phase 3)</h2>
+          <div id="mapping">
+            {% for c in state.mapping.categories %}
+            <div class="maprow">
+              <div class="top"><span>{{ c.label }}</span><span data-map="{{ c.id }}">{{ c.applied }}/{{ c.rule_count }}</span></div>
+              <div class="bar"><span data-mapbar="{{ c.id }}" style="width: {{ (100 * c.applied / c.rule_count) if c.rule_count else 0 }}%;"></span></div>
+            </div>
+            {% endfor %}
+          </div>
+        </section>
+
+        <!-- Outputs -->
+        <section class="card">
+          <h2>Implementation &amp; Output (Phases 5–7)</h2>
+          <div class="outputs">
+            <div class="stat"><div class="n" data-o="java_files_generated">{{ state.outputs.java_files_generated }}</div><div class="k">Java files</div></div>
+            <div class="stat"><div class="n" data-o="tests_generated">{{ state.outputs.tests_generated }}</div><div class="k">Tests gen.</div></div>
+            <div class="stat"><div class="n" data-o="tests_passing">{{ state.outputs.tests_passing }}</div><div class="k">Tests pass</div></div>
+          </div>
+          <div class="pr" data-pr>
+            {% if state.outputs.pr_url %}
+              Migration PR: <a href="{{ state.outputs.pr_url }}">{{ state.outputs.pr_url }}</a>
+            {% else %}
+              <span class="muted">Migration PR not opened yet — appears after Gate 4.</span>
+            {% endif %}
+          </div>
+        </section>
+      </div>
+    </div>
+    <div class="updated">Auto-refreshing every 3s · <span id="ts">—</span></div>
+  </div>
+
+  <script>
+    function setStatus(el, status) {
+      if (!el) return;
+      el.className = el.className.replace(/\b(pending|active|done|blocked|cleared|waiting)\b/g, '').trim();
+      el.classList.add(status);
+    }
+    async function poll() {
+      try {
+        const r = await fetch('/api/state', { cache: 'no-store' });
+        const s = await r.json();
+        (s.phases || []).forEach(p => {
+          const pill = document.querySelector(`[data-pill="${p.id}"]`);
+          if (pill) { pill.textContent = p.status; setStatus(pill, p.status); }
+          setStatus(document.querySelector(`[data-dot="${p.id}"]`), p.status);
+        });
+        (s.gates || []).forEach(g => {
+          const pill = document.querySelector(`[data-pill="${g.id}"]`);
+          if (pill) { pill.textContent = g.status; setStatus(pill, g.status); }
+          setStatus(document.querySelector(`[data-dot="${g.id}"]`), g.status);
+        });
+        const a = s.assessment || {};
+        Object.keys(a).forEach(k => {
+          const el = document.querySelector(`[data-a="${k}"]`);
+          if (el && typeof a[k] !== 'object') el.textContent = a[k];
+        });
+        const band = document.querySelector('[data-band]');
+        if (band && a.complexity_band) { band.textContent = a.complexity_band; band.className = 'band ' + a.complexity_band; }
+        ((s.mapping || {}).categories || []).forEach(c => {
+          const t = document.querySelector(`[data-map="${c.id}"]`);
+          if (t) t.textContent = `${c.applied}/${c.rule_count}`;
+          const bar = document.querySelector(`[data-mapbar="${c.id}"]`);
+          if (bar) bar.style.width = (c.rule_count ? (100 * c.applied / c.rule_count) : 0) + '%';
+        });
+        const o = s.outputs || {};
+        Object.keys(o).forEach(k => {
+          const el = document.querySelector(`[data-o="${k}"]`);
+          if (el) el.textContent = o[k];
+        });
+        document.getElementById('ts').textContent = new Date().toLocaleTimeString();
+      } catch (e) { /* keep last render on transient errors */ }
+    }
+    poll();
+    setInterval(poll, 3000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>.NET → Java Modernization — Phased Workflow with Human Checkpoints</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f5f7fa;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, #4b2bb5 0%, #6d28d9 50%, #0ea5e9 100%);
+      color: #fff;
+      text-align: center;
+      padding: 2rem 1rem 1.75rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    }
+    header h1 { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 700; letter-spacing: -0.02em; }
+    header p { margin-top: .5rem; font-size: .95rem; color: #e0e7ff; }
+
+    main { flex: 1; width: 100%; max-width: 1100px; padding: 2rem 1rem; display: flex; justify-content: center; }
+    #flowchart { width: 100%; overflow-x: auto; }
+    .mermaid svg { margin: 0 auto; display: block; }
+
+    .legend { width: 100%; max-width: 1100px; padding: 0 1rem 2.5rem; }
+    .legend-inner {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 1.25rem 1.75rem; box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .legend-title {
+      font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .05em;
+      color: #64748b; margin-bottom: .9rem;
+    }
+    .legend-items { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-start; }
+    .legend-item { display: flex; align-items: center; gap: .55rem; font-size: .9rem; color: #334155; max-width: 320px; }
+    .legend-swatch { width: 22px; height: 22px; flex-shrink: 0; border: 2px solid; }
+    .sw-trigger { background: #ede9fe; border-color: #6d28d9; border-radius: 999px; }
+    .sw-phase { background: #dbeafe; border-color: #2563eb; border-radius: 4px; }
+    .sw-gate { background: #fde68a; border-color: #b45309; transform: rotate(45deg); border-radius: 3px; }
+    .legend-note { margin-top: 1rem; font-size: .85rem; color: #64748b; line-height: 1.5; }
+
+    footer {
+      width: 100%; text-align: center; padding: 1rem; font-size: .8rem; color: #94a3b8;
+      border-top: 1px solid #e2e8f0; background: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>.NET &rarr; Java Modernization &mdash; Phased Workflow</h1>
+    <p>Seven automated phases with mandatory human-in-the-loop checkpoints between them</p>
+  </header>
+
+  <main>
+    <div id="flowchart">
+      <pre class="mermaid">
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor':      '#dbeafe',
+    'primaryTextColor':  '#1e293b',
+    'primaryBorderColor':'#2563eb',
+    'lineColor':         '#475569',
+    'fontSize':          '15px'
+  },
+  'flowchart': { 'useMaxWidth': false, 'htmlLabels': false, 'padding': 16, 'nodeSpacing': 32, 'rankSpacing': 30 }
+}}%%
+flowchart TD
+  START([Trigger: prompt Devin at the .NET repo])
+
+  P1[Phase 1 Intake: point at one codebase]
+  P2[Phase 2 Assessment and Analysis]
+  G1{{Human reviews assessment}}
+  P3[Phase 3 Construct Mapping]
+  G2{{Architect approves mapping rules}}
+  P4[Phase 4 Gap Analysis and Architecture]
+  G3{{Architect signs off on architecture}}
+  P5[Phase 5 Implementation: generate Java]
+  P6[Phase 6 Testing and Validation]
+  G4{{Human reviews and approves PR}}
+  P7[Phase 7 Output and Release]
+  G5{{Human approves release}}
+  DONE([Modernized Java app released])
+
+  START --> P1 --> P2 --> G1 --> P3 --> G2 --> P4 --> G3 --> P5 --> P6 --> G4 --> P7 --> G5 --> DONE
+
+  classDef trigger fill:#ede9fe,stroke:#6d28d9,stroke-width:2px,color:#312e81;
+  classDef phase fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e293b;
+  classDef gate fill:#fde68a,stroke:#b45309,stroke-width:2px,color:#5a2c04;
+
+  class START,DONE trigger;
+  class P1,P2,P3,P4,P5,P6,P7 phase;
+  class G1,G2,G3,G4,G5 gate;
+      </pre>
+    </div>
+  </main>
+
+  <div class="legend">
+    <div class="legend-inner">
+      <div class="legend-title">Legend</div>
+      <div class="legend-items">
+        <div class="legend-item"><span class="legend-swatch sw-trigger"></span><span><strong>Trigger / Release</strong> — the demo start (prompt to Devin) and the final released app</span></div>
+        <div class="legend-item"><span class="legend-swatch sw-phase"></span><span><strong>Devin phase</strong> — an automated step Devin executes end-to-end</span></div>
+        <div class="legend-item"><span class="legend-swatch sw-gate"></span><span><strong>Human checkpoint</strong> — a person must review and approve before the next phase</span></div>
+      </div>
+      <div class="legend-note">
+        The amber diamond nodes are <strong>human-in-the-loop gates</strong>. Devin pauses at each gate
+        until a human approves: the assessment (Tech Lead), the construct-mapping rules and the target
+        architecture (Architect), the migration PR before merge (Reviewer), and the final release
+        (Release Manager). Nothing advances past a gate without a human.
+      </div>
+    </div>
+  </div>
+
+  <footer>Open this file directly in a browser — Mermaid renders via CDN, no build step required.</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      securityLevel: 'loose',
+      flowchart: { htmlLabels: false, curve: 'basis', useMaxWidth: false }
+    });
+  </script>
+</body>
+</html>

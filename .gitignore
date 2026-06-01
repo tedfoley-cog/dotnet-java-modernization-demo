@@ -6,6 +6,9 @@ venv/
 .pytest_cache/
 .ruff_cache/
 
+# Generated analysis output (Devin regenerates this live in Phase 2)
+analysis_output/
+
 # Java / Maven
 java_target/target/
 *.class
