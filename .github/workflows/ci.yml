@@ -26,7 +26,7 @@ jobs:
         run: pytest -q scripts
 
   java_target:
-    name: Java target skeleton compiles
+    name: Java target skeleton compiles and tests pass
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,3 +36,5 @@ jobs:
           java-version: "17"
       - name: Compile skeleton
         run: mvn -B -q -f java_target/pom.xml compile
+      - name: Test skeleton
+        run: mvn -B -q -f java_target/pom.xml test

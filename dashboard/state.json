@@ -85,8 +85,8 @@
   ],
   "assessment": {
     "files": 23,
-    "lines": 1174,
-    "complexity": 321,
+    "lines": 1191,
+    "complexity": 323,
     "complexity_band": "HIGH",
     "async_methods": 8,
     "linq_ops": 25,
