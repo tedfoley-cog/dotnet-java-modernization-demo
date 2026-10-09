@@ -19,6 +19,24 @@ Java 17 skeleton:
 | MVC controllers (`Controllers/*.cs`) | `@Controller` / `@RestController` in `controller/` |
 | Razor views (`Views/**/*.cshtml`) | Thymeleaf templates in `src/main/resources/templates/` |
 
+## Datasource configuration
+
+No connection details are committed. `application.properties` reads the datasource from the
+environment only (placeholders documented in [`../.env.example`](../.env.example)):
+
+| Property | Environment variable |
+|---|---|
+| `spring.datasource.url` | `SPRING_DATASOURCE_URL` |
+| `spring.datasource.username` | `SPRING_DATASOURCE_USERNAME` |
+| `spring.datasource.password` | `SPRING_DATASOURCE_PASSWORD` |
+
+For local runs and demo equivalence tests, activate the in-memory H2 profile instead:
+`SPRING_PROFILES_ACTIVE=dev` (`application-dev.properties`), with `SPRING_DATASOURCE_*` unset
+(Spring gives environment variables precedence over profile files). The target database and
+its JDBC driver are not chosen yet; add the driver to `pom.xml` when that decision is made. The legacy SQL Server
+connection settings (local instance, Windows integrated auth, MARS) are intentionally not
+carried into any profile.
+
 Build locally (after migration, or to verify the skeleton):
 
 ```bash

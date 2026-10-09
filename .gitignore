@@ -19,6 +19,9 @@ dotnet_source/**/obj/
 dotnet_source/packages/
 *.user
 
+# Local environment (see .env.example)
+.env
+
 # OS / editor
 .DS_Store
 .idea/

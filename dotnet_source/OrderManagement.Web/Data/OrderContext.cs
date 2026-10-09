@@ -1,3 +1,4 @@
+using System;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using OrderManagement.Web.Models;
@@ -5,13 +6,31 @@ using OrderManagement.Web.Models;
 namespace OrderManagement.Web.Data
 {
     /// <summary>
-    /// Entity Framework 6 Code-First context. The connection string "OrderDb" is
-    /// resolved from Web.config. Maps the five aggregate roots of the order domain.
+    /// Entity Framework 6 Code-First context. The connection string is supplied by the
+    /// environment (ORDERDB_CONNECTION_STRING), never by committed config.
+    /// Maps the five aggregate roots of the order domain.
     /// </summary>
     public class OrderContext : DbContext
     {
-        public OrderContext() : base("name=OrderDb")
+        public const string ConnectionStringVariable = "ORDERDB_CONNECTION_STRING";
+
+        public OrderContext() : this(ResolveConnectionString())
         {
+        }
+
+        public OrderContext(string connectionString) : base(connectionString)
+        {
+        }
+
+        private static string ResolveConnectionString()
+        {
+            var connectionString = Environment.GetEnvironmentVariable(ConnectionStringVariable);
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException(
+                    ConnectionStringVariable + " is not set; provide the OrderDb connection string via the environment.");
+            }
+            return connectionString;
         }
 
         public DbSet<Customer> Customers { get; set; }
