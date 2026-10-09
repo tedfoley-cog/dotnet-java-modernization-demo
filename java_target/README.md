@@ -31,7 +31,9 @@ environment only (placeholders documented in [`../.env.example`](../.env.example
 | `spring.datasource.password` | `SPRING_DATASOURCE_PASSWORD` |
 
 For local runs and demo equivalence tests, activate the in-memory H2 profile instead:
-`SPRING_PROFILES_ACTIVE=dev` (`application-dev.properties`). The legacy SQL Server
+`SPRING_PROFILES_ACTIVE=dev` (`application-dev.properties`), with `SPRING_DATASOURCE_*` unset
+(Spring gives environment variables precedence over profile files). The target database and
+its JDBC driver are not chosen yet; add the driver to `pom.xml` when that decision is made. The legacy SQL Server
 connection settings (local instance, Windows integrated auth, MARS) are intentionally not
 carried into any profile.
 
